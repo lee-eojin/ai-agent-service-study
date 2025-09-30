@@ -397,15 +397,3 @@ SELECT * FROM documents ORDER BY embedding <=> '[0.1,0.2,...]' LIMIT 10;
 SELECT * FROM documents ORDER BY embedding <-> '[0.1,0.2,...]' LIMIT 10;
 ```
 
----
-
-## 환경 구축 완료
-
-이제 다음 작업을 수행할 수 있다:
-
-1. **로컬 개발**: VS Code Remote-SSH로 서버에서 직접 코드 작성
-2. **데이터베이스 관리**: TablePlus로 PostgreSQL 시각화
-3. **벡터 검색**: pgVector로 문서 유사도 검색 구현
-4. **컨테이너 관리**: Docker Compose로 서비스 배포
-
-**다음 단계**: LangChain을 활용한 RAG 시스템 구축
