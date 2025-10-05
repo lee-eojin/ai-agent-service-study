@@ -2,8 +2,6 @@
 
 ## 학습 목표
 
-이 문서에서는 AI Agent 개발의 기반 언어인 Python을 실무 중심으로 학습한다.
-
 1. **Python 개발 환경 구축**: 가상환경 설정, VSCode 연동, 패키지 관리
 2. **Python 핵심 문법**: 자료구조, 제어문, 함수, 객체지향, 예외 처리
 3. **AI 응용 실습**: Flask 웹 서버, PostgreSQL 연동, LLM API 호출, 벡터 임베딩
@@ -39,7 +37,7 @@ python -m venv myvenv
 myvenv\Scripts\activate
 ```
 
-> **💡 가상환경을 사용하는 이유**
+> **가상환경을 사용하는 이유**
 >
 > **프로젝트 간 충돌 방지:**
 > - 프로젝트 A: Django 3.2 사용
