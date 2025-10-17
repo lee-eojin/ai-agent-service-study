@@ -8,6 +8,7 @@ AI Agent 개발에 필요한 개념들을 공부하며 정리한 노트입니다
 2. [리눅스 필수 명령어](./02-linux-essential-commands.md)
 3. [AI를 위한 Python 기초 및 실전](./03-python-for-ai.md)
 4. [머신러닝 기초 (Machine Learning Basics)](./04-machine-learning-basics.md)
+5. [LangChain 기초 (LangChain Fundamentals)](./05-langchain-fundamentals.md)
 
 ---
 
