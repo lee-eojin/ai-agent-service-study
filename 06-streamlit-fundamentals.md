@@ -69,7 +69,6 @@ streamlit run app.py
 > - 대규모 프로덕션 앱에는 부적합 (속도, 확장성)
 > - 커스터마이징 제한 (디자인 자유도 낮음)
 >
-> **개인 의견:**
 > 데이터 대시보드나 ML 데모를 빠르게 만들 때는 Streamlit이 최고다. 하지만 정식 서비스는 FastAPI + React 조합을 권장. Streamlit은 "아이디어 검증"과 "내부 도구" 용도로 적합하다.
 
 ### 1.2 Streamlit의 5가지 장점
@@ -82,7 +81,7 @@ streamlit run app.py
 | **완벽한 데이터 연동** | Pandas, NumPy, 시각화 라이브러리 호환 | `st.dataframe(df)` 로 인터랙티브 표 |
 | **AI/LLM 친화적** | 챗봇 UI, 스트리밍 출력 기본 제공 | LangChain 스트리밍 직접 지원 |
 
-> **용어 정리: 프로토타이핑 vs 프로덕션**
+> **프로토타이핑 vs 프로덕션**
 >
 > **프로토타이핑 (Prototyping):**
 > - 아이디어를 빠르게 검증하기 위한 초기 버전
@@ -109,7 +108,7 @@ streamlit run app.py
 | **AI/LLM 통합** | 쉬움 | 수동 구현 | 어려움 | 매우 쉬움 |
 | **프로덕션 적합도** | 낮음 | 높음 | 중간 | 낮음 |
 
-> **실무 팁: 프레임워크 선택 기준**
+> **프레임워크 선택 기준**
 >
 > **Streamlit 선택:**
 > - 내부 데이터 대시보드
@@ -167,7 +166,7 @@ if st.button("증가"):
 st.write(f"현재 카운트: {st.session_state.count}")
 ```
 
-> **실무 팁: 초보자가 자주 하는 실수**
+> **초보자가 자주 하는 실수**
 >
 > **문제 1: 변수가 계속 초기화됨**
 > ```python
@@ -329,7 +328,7 @@ st.write("숫자:", 42)
 st.write("리스트:", [1, 2, 3])
 ```
 
-> **실무 팁: st.write()의 마법**
+> **st.write()의 동작 방식**
 >
 > `st.write()`는 입력 타입에 따라 자동으로 최적 표시 방법 선택:
 >
@@ -340,8 +339,7 @@ st.write("리스트:", [1, 2, 3])
 > | Matplotlib 그래프 | 이미지 |
 > | Dict | JSON 형식 |
 >
-> **개인 의견:**
-> 프로토타입에서는 `st.write()` 남발해도 OK. 나중에 `st.dataframe()`, `st.pyplot()` 등으로 세밀하게 교체.
+> 프로토타입에서는 `st.write()` 남발해도 괜찮다. 나중에 `st.dataframe()`, `st.pyplot()` 등으로 세밀하게 교체하면 된다.
 
 ### 3.2 데이터 표시
 
@@ -455,7 +453,7 @@ number = st.number_input("수량", min_value=1, max_value=100, value=10)
 st.write(f"수량: {number}")
 ```
 
-> **실무 팁: 슬라이더 vs number_input**
+> **슬라이더 vs number_input 선택 기준**
 >
 > | 상황 | 추천 위젯 | 이유 |
 > |------|-----------|------|
@@ -505,9 +503,9 @@ if uploaded_file is not None:
         st.dataframe(df)
 ```
 
-> **실무 팁: 파일 업로드 처리**
+> **파일 업로드 시 주의사항**
 >
-> **주의사항:**
+> **문제:**
 > - `uploaded_file`은 재실행 시 초기화됨 (사용자가 다시 업로드 필요)
 > - 대용량 파일은 `st.session_state`에 저장
 >
@@ -632,7 +630,7 @@ if prompt := st.chat_input("질문 입력"):
         st.write_stream(stream_response(response))
 ```
 
-> **실무 관점: LangChain 스트리밍 연동**
+> **LangChain 스트리밍 연동**
 >
 > LangChain의 스트리밍 출력을 `st.write_stream()`에 직접 연결 가능:
 >
@@ -907,7 +905,7 @@ else:
     st.info("왼쪽 사이드바에서 문서를 업로드하세요.")
 ```
 
-> **실무 팁: RAG 성능 향상**
+> **RAG 성능 향상 방법**
 >
 > **1. 청크 크기 최적화:**
 > - 문서 타입별 조정 (논문: 1500자, 뉴스: 500자)
