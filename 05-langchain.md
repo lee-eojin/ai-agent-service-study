@@ -1,4 +1,4 @@
-# LangChain 기초
+# LangChain
 
 ## 학습 목표
 

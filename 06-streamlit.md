@@ -1,4 +1,4 @@
-# Streamlit 기초
+# Streamlit
 
 ## 학습 목표
 

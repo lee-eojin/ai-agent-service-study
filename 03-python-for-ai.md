@@ -1,4 +1,4 @@
-# AI를 위한 Python 기초 및 실전
+# AI를 위한 Python
 
 ## 학습 목표
 

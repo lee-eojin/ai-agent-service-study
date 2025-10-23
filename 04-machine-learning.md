@@ -1,4 +1,4 @@
-# 머신러닝 기초 (Machine Learning Basics)
+# 머신러닝 (Machine Learning)
 
 ## 학습 목표
 
