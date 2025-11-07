@@ -61,7 +61,7 @@ Docker는 **OS 수준의 가상화**를 제공한다. 호스트 OS의 커널을 
    - **이미지**: Ubuntu 22.04 Minimal
    - **Shape**: VM.Standard.E2.1.Micro (Always Free)
 
-> **💡 왜 Ubuntu 22.04를 사용하는가?**
+> **왜 Ubuntu 22.04를 사용하는가?**
 >
 > 최신 버전(24.04)이 있지만, 프로덕션 환경에서는 **1~2년 전 LTS 버전**을 사용하는 것이 국룰이다.
 >
@@ -100,7 +100,7 @@ Docker는 **OS 수준의 가상화**를 제공한다. 호스트 OS의 커널을 
 | 443 | TCP | HTTPS | Ingress Rule 추가 (Source: 0.0.0.0/0) |
 | 5432 | TCP | PostgreSQL | **로컬에서만 접근** (SSH 터널 사용) |
 
-> **💡 CIDR과 보안 규칙 이해하기**
+> **CIDR과 보안 규칙 이해하기**
 >
 > **0.0.0.0/0이란?**
 > - 모든 IP 주소를 의미 (전 세계 어디서든 접속 가능)
@@ -263,7 +263,7 @@ volumes:
   pgdata:
 ```
 
-> **💡 restart 정책 이해하기**
+> **restart 정책 이해하기**
 >
 > **`restart: unless-stopped`란?**
 > - 컨테이너가 종료되면 자동으로 재시작
