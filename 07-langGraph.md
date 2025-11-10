@@ -4,40 +4,30 @@
 
 이 문서에서는 LangGraph를 활용한 고급 AI 워크플로우 설계와 구현을 다룬다.
 
-1. **LangGraph 개요**: RAG의 한계와 그래프 기반 접근법
-2. **핵심 개념**: State, Node, Edge, Conditional Edge의 이해
-3. **Self-RAG**: 검색 문서 관련성 평가로 Hallucination 감소
-4. **Corrective RAG**: 질문 재작성과 반복 검색으로 정확도 향상
-5. **실전 응용**: 웹 검색 통합 RAG 시스템 구축
+1. LangGraph 개요: RAG의 한계와 그래프 기반 접근법
+2. 핵심 개념: State, Node, Edge, Conditional Edge의 이해
+3. Self-RAG: 검색 문서 관련성 평가로 Hallucination 감소
+4. Corrective RAG: 질문 재작성과 반복 검색으로 정확도 향상
+5. 실전 응용: 웹 검색 통합 RAG 시스템 구축
 
 ## 전체 로드맵
 
 LangGraph 학습은 다음 순서로 진행된다:
 
-```
 1단계: RAG의 문제점 이해
-┌──────────────────────────────────────┐
-│ 고정된 파이프라인 → 유연성 부족             │
-│ Hallucination → 검증 불가              │
-│ 검색 실패 → 대안 없음                    │
-└──────────────────────────────────────┘
+- 고정된 파이프라인 → 유연성 부족
+- Hallucination → 검증 불가
+- 검색 실패 → 대안 없음
 
 2단계: LangGraph 기본 개념
-┌──────────────────────────────────────┐
-│ State → Node → Edge                  │
-│         ↓                            │
-│   Conditional Edge                   │
-│         ↓                            │
-│   순환 가능한 워크플로우                   │
-└──────────────────────────────────────┘
+- State → Node → Edge
+- Conditional Edge
+- 순환 가능한 워크플로우
 
 3단계: 고급 RAG 패턴
-┌──────────────────────────────────────┐
-│ Self-RAG: 관련성 평가                   │
-│ Corrective RAG: 질문 재작성             │
-│ Web Search RAG: 외부 검색 통합          │
-└──────────────────────────────────────┘
-```
+- Self-RAG: 관련성 평가
+- Corrective RAG: 질문 재작성
+- Web Search RAG: 외부 검색 통합
 
 ---
 
@@ -45,30 +35,30 @@ LangGraph 학습은 다음 순서로 진행된다:
 
 ### 1.1 LangGraph 개요
 
-LangGraph는 **LLM 기반 애플리케이션의 흐름을 그래프 구조로 모델링**하는 프레임워크다. LangChain 생태계의 일부로, 복잡한 AI 워크플로우를 Node, Edge, State로 설계하여 순환적이고 유연한 제어를 가능하게 한다.
+LangGraph는 LLM 기반 애플리케이션의 흐름을 그래프 구조로 모델링하는 프레임워크다. LangChain 생태계의 일부로, 복잡한 AI 워크플로우를 Node, Edge, State로 설계하여 순환적이고 유연한 제어를 가능하게 한다.
 
-**설치:**
+설치:
 ```bash
 pip install langgraph langchain langchain-openai
 ```
 
-> **용어 정리: 그래프 (Graph)**
+> 용어 정리: 그래프 (Graph)
 >
-> 컴퓨터 과학에서 그래프는 **노드(Node)**와 **엣지(Edge)**로 구성된 자료구조다:
+> 컴퓨터 과학에서 그래프는 노드(Node)와 엣지(Edge)로 구성된 자료구조다:
 >
-> - **Node (노드)**: 작업을 수행하는 단위 (예: 문서 검색, 답변 생성)
-> - **Edge (엣지)**: 노드 간 연결 (예: 검색 → 답변)
-> - **Directed Graph (방향 그래프)**: 엣지에 방향이 있음
-> - **Cyclic Graph (순환 그래프)**: 노드로 다시 돌아올 수 있음
+> - Node (노드): 작업을 수행하는 단위 (예: 문서 검색, 답변 생성)
+> - Edge (엣지): 노드 간 연결 (예: 검색 → 답변)
+> - Directed Graph (방향 그래프): 엣지에 방향이 있음
+> - Cyclic Graph (순환 그래프): 노드로 다시 돌아올 수 있음
 >
-> **LangGraph의 특징:**
+> LangGraph의 특징:
 > - 방향 그래프 (Directed)
-> - 순환 가능 (Cyclic) ← **핵심**
+> - 순환 가능 (Cyclic) ← 핵심
 > - 조건부 분기 (Conditional)
 
 ### 1.2 LangGraph가 필요한 이유
 
-LangChain의 기본 체인 구조는 **단방향 파이프라인**이다:
+LangChain의 기본 체인 구조는 단방향 파이프라인이다:
 
 ```
 Document Loader → Text Splitter → Embedding → VectorStore
@@ -78,52 +68,52 @@ Document Loader → Text Splitter → Embedding → VectorStore
                                     Prompt → Model → Answer
 ```
 
-**문제점:**
+문제점:
 
 | 문제 | 설명 | 영향 |
 |------|------|------|
-| **고정된 흐름** | 한 번 실행 후 수정 불가 | 검색 실패 시 대응 불가 |
-| **평가 불가** | 중간 결과 검증 없음 | Hallucination 방지 어려움 |
-| **조건부 처리 부재** | if-else 로직 구현 어려움 | 상황별 대응 불가 |
-| **재시도 불가** | 실패 시 처음부터 다시 시작 | 비효율적 |
+| 고정된 흐름 | 한 번 실행 후 수정 불가 | 검색 실패 시 대응 불가 |
+| 평가 불가 | 중간 결과 검증 없음 | Hallucination 방지 어려움 |
+| 조건부 처리 부재 | if-else 로직 구현 어려움 | 상황별 대응 불가 |
+| 재시도 불가 | 실패 시 처음부터 다시 시작 | 비효율적 |
 
-> **💡 실무 관점: 기본 RAG의 한계**
+> 💡 실무 관점: 기본 RAG의 한계
 >
 > 프로덕션 환경에서 기본 RAG를 운영하면서 겪는 실제 문제들:
 >
-> **사례 1: 검색 실패**
+> 사례 1: 검색 실패
 > - 질문: "2023년 회사 매출은?"
 > - 문서에는 "작년 매출 258조원" (2023이라는 키워드 없음)
 > - 결과: 검색 실패 → "정보 없음" 답변
 >
-> **사례 2: 잘못된 검색**
+> 사례 2: 잘못된 검색
 > - 질문: "파이썬 버전은?"
 > - 검색: "파이썬" 키워드로 무관한 문서 검색
 > - 결과: 잘못된 정보 기반 답변 (Hallucination)
 >
-> **사례 3: 불완전한 정보**
+> 사례 3: 불완전한 정보
 > - 질문: "최신 AI 트렌드는?"
 > - 내부 문서: 2023년까지만 있음
 > - 결과: 구식 정보 제공 (웹 검색 필요)
 >
-> **LangGraph 도입 후:**
+> LangGraph 도입 후:
 > - 검색 실패 시 질문 재작성 후 재검색
 > - 검색 결과 관련성 평가 후 재시도
 > - 내부 문서 부족 시 웹 검색 자동 통합
 >
-> 실제 정확도가 **65% → 85%**로 향상 (내부 테스트 결과)
+> 실제 정확도가 65% → 85%로 향상 (내부 테스트 결과)
 
 ### 1.3 LangGraph vs LangChain Agent
 
 | 구분 | LangChain Agent | LangGraph |
 |------|-----------------|-----------|
-| **제어 방식** | LLM이 자율 결정 | 개발자가 명시적 정의 |
-| **예측 가능성** | 낮음 (LLM 판단에 의존) | 높음 (고정된 로직) |
-| **비용** | 높음 (반복적 LLM 호출) | 낮음 (필요 시만 호출) |
-| **디버깅** | 어려움 | 쉬움 (각 노드 추적 가능) |
-| **사용 사례** | 탐색적 작업, 실험 | 정형화된 워크플로우 |
+| 제어 방식 | LLM이 자율 결정 | 개발자가 명시적 정의 |
+| 예측 가능성 | 낮음 (LLM 판단에 의존) | 높음 (고정된 로직) |
+| 비용 | 높음 (반복적 LLM 호출) | 낮음 (필요 시만 호출) |
+| 디버깅 | 어려움 | 쉬움 (각 노드 추적 가능) |
+| 사용 사례 | 탐색적 작업, 실험 | 정형화된 워크플로우 |
 
-**예시: 문서 검색 실패 시 대응**
+예시: 문서 검색 실패 시 대응
 
 ```python
 # LangChain Agent (LLM이 판단)
@@ -136,14 +126,14 @@ def evaluate_documents(state):
     return "generate_answer"
 ```
 
-> **개인 의견: 언제 Agent를 쓰고 언제 LangGraph를 쓸까**
+> 개인 의견: 언제 Agent를 쓰고 언제 LangGraph를 쓸까
 >
-> **LangChain Agent 사용:**
+> LangChain Agent 사용:
 > - 작업이 비정형적이고 탐색적일 때
 > - 예: "인터넷에서 정보 찾고 요약해줘" (범위가 넓음)
 > - 실패해도 괜찮은 경우 (실험, 내부 도구)
 >
-> **LangGraph 사용:**
+> LangGraph 사용:
 > - 워크플로우가 명확할 때
 > - 예: "문서 검색 → 평가 → 재검색 or 답변" (단계가 정의됨)
 > - 신뢰성이 중요한 경우 (고객 대응, 프로덕션)
@@ -156,9 +146,9 @@ def evaluate_documents(state):
 
 ### 2.1 State (상태)
 
-**State**는 노드 간 정보를 전달하는 **공유 메모리**다. Python의 `TypedDict`로 정의하며, 각 노드는 State를 읽고 업데이트한다.
+State는 노드 간 정보를 전달하는 공유 메모리다. Python의 `TypedDict`로 정의하며, 각 노드는 State를 읽고 업데이트한다.
 
-**State 정의:**
+State 정의:
 ```python
 from typing import TypedDict, Annotated
 import operator
@@ -171,15 +161,15 @@ class RAGState(TypedDict):
     retry_count: int           # 재시도 횟수
 ```
 
-**State 업데이트 방식:**
+State 업데이트 방식:
 
 | 방식 | 설명 | 코드 예시 |
 |------|------|-----------|
-| **Overwrite (기본)** | 값을 덮어씀 | `state["answer"] = "새 답변"` |
-| **Append (추가)** | 리스트에 추가 | `Annotated[list, operator.add]` |
-| **Merge (병합)** | 딕셔너리 병합 | `Annotated[dict, merge_dict]` |
+| Overwrite (기본) | 값을 덮어씀 | `state["answer"] = "새 답변"` |
+| Append (추가) | 리스트에 추가 | `Annotated[list, operator.add]` |
+| Merge (병합) | 딕셔너리 병합 | `Annotated[dict, merge_dict]` |
 
-**Append 예시:**
+Append 예시:
 ```python
 from typing import Annotated
 import operator
@@ -197,11 +187,11 @@ class State(TypedDict):
 # 최종 State: documents = ["문서1", "문서2"]
 ```
 
-> **⚠️ 주의사항: State 크기 관리**
+> ⚠️ 주의사항: State 크기 관리
 >
-> State는 **매 노드마다 복사**되므로 크기가 커지면 성능 저하:
+> State는 매 노드마다 복사되므로 크기가 커지면 성능 저하:
 >
-> **문제:**
+> 문제:
 > ```python
 > class State(TypedDict):
 >     documents: Annotated[list[str], operator.add]  # 계속 누적
@@ -209,19 +199,19 @@ class State(TypedDict):
 > # 10개 노드 거치면 문서가 100개 이상 누적 가능
 > ```
 >
-> **해결:**
-> 1. **필요한 정보만 저장**
+> 해결:
+> 1. 필요한 정보만 저장
 >    ```python
 >    state["top_documents"] = documents[:3]  # 상위 3개만
 >    ```
 >
-> 2. **중간 결과 삭제**
+> 2. 중간 결과 삭제
 >    ```python
 >    def cleanup_node(state):
 >        return {"documents": []}  # 초기화
 >    ```
 >
-> 3. **외부 저장소 사용**
+> 3. 외부 저장소 사용
 >    ```python
 >    # State에는 ID만 저장
 >    state["document_ids"] = ["doc1", "doc2"]
@@ -230,9 +220,9 @@ class State(TypedDict):
 
 ### 2.2 Node (노드)
 
-**Node**는 작업을 수행하는 **함수**다. State를 입력받아 처리 후 업데이트된 State를 반환한다.
+Node는 작업을 수행하는 함수다. State를 입력받아 처리 후 업데이트된 State를 반환한다.
 
-**Node 구조:**
+Node 구조:
 ```python
 def node_function(state: State) -> State:
     # 1. State에서 필요한 정보 읽기
@@ -245,7 +235,7 @@ def node_function(state: State) -> State:
     return {"answer": result}
 ```
 
-**실제 예시: 문서 검색 노드**
+실제 예시: 문서 검색 노드
 ```python
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
@@ -264,18 +254,18 @@ def retrieve_documents(state: RAGState) -> RAGState:
     }
 ```
 
-> **Node 설계 원칙**
+> Node 설계 원칙
 >
-> **1. 단일 책임 (Single Responsibility)**
+> 1. 단일 책임 (Single Responsibility)
 > - 각 노드는 하나의 명확한 작업만 수행
 > - 나쁜 예: `retrieve_and_answer_node` (검색 + 답변)
 > - 좋은 예: `retrieve_node`, `answer_node` (분리)
 >
-> **2. 순수 함수 지향**
+> 2. 순수 함수 지향
 > - 외부 상태 변경 최소화
 > - 같은 입력이면 같은 출력
 >
-> **3. 에러 처리**
+> 3. 에러 처리
 > ```python
 > def safe_retrieve_node(state):
 >     try:
@@ -285,7 +275,7 @@ def retrieve_documents(state: RAGState) -> RAGState:
 >         return {"documents": [], "error": str(e)}
 > ```
 >
-> **4. 로깅**
+> 4. 로깅
 > ```python
 > import logging
 >
@@ -298,9 +288,9 @@ def retrieve_documents(state: RAGState) -> RAGState:
 
 ### 2.3 Edge (엣지)
 
-**Edge**는 노드 간 연결을 정의한다. 다음에 실행할 노드를 지정한다.
+Edge는 노드 간 연결을 정의한다. 다음에 실행할 노드를 지정한다.
 
-**기본 Edge:**
+기본 Edge:
 ```python
 from langgraph.graph import StateGraph, END
 
@@ -317,16 +307,16 @@ graph.add_edge("retrieve", "answer")
 graph.add_edge("answer", END)
 ```
 
-**흐름:**
+흐름:
 ```
 retrieve → answer → END
 ```
 
 ### 2.4 Conditional Edge (조건부 엣지)
 
-**Conditional Edge**는 조건에 따라 다음 노드를 선택한다. if-else 로직을 구현할 수 있다.
+Conditional Edge는 조건에 따라 다음 노드를 선택한다. if-else 로직을 구현할 수 있다.
 
-**구조:**
+구조:
 ```python
 def condition_function(state: State) -> str:
     """조건 판단 함수"""
@@ -346,14 +336,14 @@ graph.add_conditional_edges(
 )
 ```
 
-**흐름:**
+흐름:
 ```
 evaluate → (조건 판단)
             ├─ relevance_score > 0.7 → answer
             └─ relevance_score ≤ 0.7 → rewrite
 ```
 
-**실제 예시:**
+실제 예시:
 ```python
 def evaluate_relevance(state: RAGState) -> str:
     """검색 문서 관련성 평가"""
@@ -378,17 +368,17 @@ graph.add_conditional_edges(
 )
 ```
 
-> **순환 그래프 (Cyclic Graph)**
+> 순환 그래프 (Cyclic Graph)
 >
-> LangGraph의 핵심 강점은 **순환**이다:
+> LangGraph의 핵심 강점은 순환이다:
 >
-> **기존 LangChain (Acyclic):**
+> 기존 LangChain (Acyclic):
 > ```
 > retrieve → answer → END
 > (한 번 지나가면 끝)
 > ```
 >
-> **LangGraph (Cyclic):**
+> LangGraph (Cyclic):
 > ```
 > retrieve → evaluate → (관련성 낮음) → rewrite → retrieve
 >     ↓                      ↑
@@ -397,12 +387,12 @@ graph.add_conditional_edges(
 >  answer → END
 > ```
 >
-> **장점:**
+> 장점:
 > - 재시도 로직 구현 가능
 > - 품질 보장 (기준 충족까지 반복)
 > - 복잡한 워크플로우 모델링
 >
-> **주의:**
+> 주의:
 > - 무한 루프 방지 필수 (`retry_count` 등)
 > - `recursion_limit` 설정 권장
 
@@ -458,14 +448,14 @@ from IPython.display import Image, display
 display(Image(app.get_graph().draw_mermaid_png()))
 ```
 
-**출력:**
+출력:
 ```
 question → answer → END
 ```
 
-> **💡 실무 팁: 디버깅 도구**
+> 💡 실무 팁: 디버깅 도구
 >
-> **1. 상세 로그 출력:**
+> 1. 상세 로그 출력:
 > ```python
 > result = app.invoke(
 >     {"question": "LangGraph란?"},
@@ -477,7 +467,7 @@ question → answer → END
 >     print(step)
 > ```
 >
-> **2. Checkpointer로 상태 추적:**
+> 2. Checkpointer로 상태 추적:
 > ```python
 > from langgraph.checkpoint.memory import MemorySaver
 >
@@ -491,7 +481,7 @@ question → answer → END
 > # 이전 상태 조회 가능
 > ```
 >
-> **3. LangSmith 연동 (유료):**
+> 3. LangSmith 연동 (유료):
 > - 모든 노드 실행 기록 자동 저장
 > - 웹 UI로 시각화
 > - 성능 분석 및 비용 추적
@@ -519,9 +509,9 @@ result = app.invoke(
 
 ### 4.1 Self-RAG 개념
 
-**Self-RAG**는 검색된 문서의 관련성을 평가하여, 관련 없는 문서 사용을 방지한다.
+Self-RAG는 검색된 문서의 관련성을 평가하여, 관련 없는 문서 사용을 방지한다.
 
-**기존 RAG 문제:**
+기존 RAG 문제:
 ```
 질문: "LangGraph의 장점은?"
 검색: ["LangChain 소개", "Python 기초", "RAG 개요"]
@@ -530,7 +520,7 @@ result = app.invoke(
 LLM: 관련 없는 정보까지 섞어서 답변 → Hallucination 발생
 ```
 
-**Self-RAG 해결:**
+Self-RAG 해결:
 ```
 질문: "LangGraph의 장점은?"
 검색: ["LangChain 소개", "Python 기초", "RAG 개요"]
@@ -545,7 +535,7 @@ LLM: 관련 높은 문서만 사용 → 정확한 답변
 
 ### 4.2 Self-RAG 구현
 
-**State 정의:**
+State 정의:
 ```python
 from typing import TypedDict
 
@@ -557,9 +547,9 @@ class SelfRAGState(TypedDict):
     answer: str
 ```
 
-**노드 정의:**
+노드 정의:
 
-**1. 검색 노드:**
+1. 검색 노드:
 ```python
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
@@ -574,7 +564,7 @@ def retrieve_node(state: SelfRAGState) -> SelfRAGState:
     }
 ```
 
-**2. 관련성 평가 노드:**
+2. 관련성 평가 노드:
 ```python
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -614,7 +604,7 @@ def evaluate_relevance_node(state: SelfRAGState) -> SelfRAGState:
     }
 ```
 
-**3. 답변 생성 노드:**
+3. 답변 생성 노드:
 ```python
 def generate_answer_node(state: SelfRAGState) -> SelfRAGState:
     """필터링된 문서 기반 답변"""
@@ -641,7 +631,7 @@ def generate_answer_node(state: SelfRAGState) -> SelfRAGState:
     return {"answer": result.content}
 ```
 
-**그래프 구성:**
+그래프 구성:
 ```python
 from langgraph.graph import StateGraph, END
 
@@ -667,23 +657,23 @@ result = app.invoke({"question": "LangGraph의 장점은?"})
 print(result["answer"])
 ```
 
-**흐름도:**
+흐름도:
 ```
 retrieve → evaluate → answer → END
            (관련성 평가)
 ```
 
-> **💡 실무 관점: 관련성 평가 최적화**
+> 💡 실무 관점: 관련성 평가 최적화
 >
-> LLM으로 각 문서를 평가하면 **비용과 시간이 많이 든다**:
+> LLM으로 각 문서를 평가하면 비용과 시간이 많이 든다:
 >
-> **문제:**
+> 문제:
 > - 문서 10개 × LLM 호출 = 10번 API 호출
 > - GPT-4 사용 시 $0.03/1K 토큰 × 10 = $0.3+ (한 번에!)
 >
-> **최적화 방법:**
+> 최적화 방법:
 >
-> **1. 배치 처리 (Batch Processing):**
+> 1. 배치 처리 (Batch Processing):
 > ```python
 > # 한 번에 모든 문서 평가
 > prompt = """다음 문서들의 관련성을 각각 0~1 점수로 평가하세요:
@@ -698,7 +688,7 @@ retrieve → evaluate → answer → END
 > """
 > ```
 >
-> **2. Reranker 모델 사용:**
+> 2. Reranker 모델 사용:
 > ```python
 > from sentence_transformers import CrossEncoder
 >
@@ -711,7 +701,7 @@ retrieve → evaluate → answer → END
 > ])
 > ```
 >
-> **3. Cohere Rerank API (유료, 정확도 높음):**
+> 3. Cohere Rerank API (유료, 정확도 높음):
 > ```python
 > import cohere
 >
@@ -724,7 +714,7 @@ retrieve → evaluate → answer → END
 > )
 > ```
 >
-> **개인 경험:**
+> 개인 경험:
 > - 프로토타입: LLM 평가 (정확하지만 느림)
 > - 프로덕션: Reranker 모델 (80% 정확도, 10배 빠름)
 > - 대규모: Cohere Rerank (95% 정확도, 중간 속도)
@@ -735,16 +725,16 @@ retrieve → evaluate → answer → END
 
 ### 5.1 Corrective RAG 개념
 
-**Corrective RAG**는 검색 결과가 불만족스러울 때, 질문을 **재작성**하여 다시 검색한다.
+Corrective RAG는 검색 결과가 불만족스러울 때, 질문을 재작성하여 다시 검색한다.
 
-**문제 상황:**
+문제 상황:
 ```
 질문: "생성형AI 가우스를 만든 회사는?"
 검색: "삼성전자", "LG전자", "네이버" (모호한 결과)
 평가: 관련성 0.3 (낮음)
 ```
 
-**해결:**
+해결:
 ```
 질문 재작성: "삼성 생성형AI 가우스 개발사"
 재검색: "삼성전자가 2023년 개발한 생성형AI 가우스..."
@@ -754,7 +744,7 @@ retrieve → evaluate → answer → END
 
 ### 5.2 Corrective RAG 구현
 
-**State 정의:**
+State 정의:
 ```python
 class CorrectiveRAGState(TypedDict):
     question: str
@@ -765,9 +755,9 @@ class CorrectiveRAGState(TypedDict):
     answer: str
 ```
 
-**노드 정의:**
+노드 정의:
 
-**1. 질문 재작성 노드:**
+1. 질문 재작성 노드:
 ```python
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -795,7 +785,7 @@ def rewrite_query_node(state: CorrectiveRAGState) -> CorrectiveRAGState:
     }
 ```
 
-**2. 평가 조건 함수:**
+2. 평가 조건 함수:
 ```python
 def evaluate_and_decide(state: CorrectiveRAGState) -> str:
     """검색 결과 평가 후 다음 단계 결정"""
@@ -810,7 +800,7 @@ def evaluate_and_decide(state: CorrectiveRAGState) -> str:
         return "rewrite"   # 질문 재작성 후 재검색
 ```
 
-**전체 그래프:**
+전체 그래프:
 ```python
 from langgraph.graph import StateGraph, END
 
@@ -844,7 +834,7 @@ graph.add_edge("generate", END)
 app = graph.compile()
 ```
 
-**흐름도:**
+흐름도:
 ```
 retrieve → evaluate → (관련성 높음) → generate → END
               ↓              ↑
@@ -854,11 +844,11 @@ retrieve → evaluate → (관련성 높음) → generate → END
               (질문 재작성 후 재검색)
 ```
 
-> **⚠️ 주의사항: 무한 루프 방지**
+> ⚠️ 주의사항: 무한 루프 방지
 >
 > Corrective RAG는 순환 구조라 무한 루프 위험이 있다:
 >
-> **문제:**
+> 문제:
 > ```python
 > # retry_count 체크 없음
 > def evaluate(state):
@@ -866,9 +856,9 @@ retrieve → evaluate → (관련성 높음) → generate → END
 >         return "rewrite"  # 계속 재시도 → 무한 루프!
 > ```
 >
-> **해결 방법:**
+> 해결 방법:
 >
-> **1. 재시도 횟수 제한:**
+> 1. 재시도 횟수 제한:
 > ```python
 > MAX_RETRIES = 3
 >
@@ -880,7 +870,7 @@ retrieve → evaluate → (관련성 높음) → generate → END
 >     return "generate"
 > ```
 >
-> **2. recursion_limit 설정:**
+> 2. recursion_limit 설정:
 > ```python
 > result = app.invoke(
 >     {"question": "..."},
@@ -888,7 +878,7 @@ retrieve → evaluate → (관련성 높음) → generate → END
 > )
 > ```
 >
-> **3. 타임아웃 설정:**
+> 3. 타임아웃 설정:
 > ```python
 > import signal
 >
@@ -910,9 +900,9 @@ retrieve → evaluate → (관련성 높음) → generate → END
 
 ### 6.1 Web Search RAG 개념
 
-내부 문서에 정보가 없을 때, **웹 검색**으로 보완한다.
+내부 문서에 정보가 없을 때, 웹 검색으로 보완한다.
 
-**시나리오:**
+시나리오:
 ```
 질문: "생성형AI 가우스를 만든 회사의 2023년 매출은?"
 
@@ -932,7 +922,7 @@ retrieve → evaluate → (관련성 높음) → generate → END
 
 ### 6.2 Web Search RAG 구현
 
-**State 정의:**
+State 정의:
 ```python
 class WebSearchRAGState(TypedDict):
     question: str
@@ -943,9 +933,9 @@ class WebSearchRAGState(TypedDict):
     answer: str
 ```
 
-**노드 정의:**
+노드 정의:
 
-**1. Grounding 평가 노드:**
+1. Grounding 평가 노드:
 ```python
 def evaluate_grounding_node(state: WebSearchRAGState) -> WebSearchRAGState:
     """답변이 문서에 근거하는지 평가"""
@@ -976,7 +966,7 @@ def evaluate_grounding_node(state: WebSearchRAGState) -> WebSearchRAGState:
     return {"is_grounded": is_grounded}
 ```
 
-**2. 웹 검색 노드:**
+2. 웹 검색 노드:
 ```python
 from langchain_community.tools import DuckDuckGoSearchRun
 
@@ -991,7 +981,7 @@ def web_search_node(state: WebSearchRAGState) -> WebSearchRAGState:
     return {"web_results": [results]}
 ```
 
-**3. 조건 함수:**
+3. 조건 함수:
 ```python
 def decide_next_step(state: WebSearchRAGState) -> str:
     """문서 충분성 판단"""
@@ -1001,7 +991,7 @@ def decide_next_step(state: WebSearchRAGState) -> str:
         return "rewrite_and_search_web"  # 웹 검색 필요
 ```
 
-**전체 그래프:**
+전체 그래프:
 ```python
 graph = StateGraph(WebSearchRAGState)
 
@@ -1035,29 +1025,29 @@ graph.add_edge("generate_from_web", END)
 app = graph.compile()
 ```
 
-**흐름도:**
+흐름도:
 ```
 retrieve → evaluate_grounding
               ├─ (grounded) → generate_from_docs → END
               └─ (not grounded) → rewrite → web_search → generate_from_web → END
 ```
 
-> **💡 실무 팁: 웹 검색 도구 선택**
+> 💡 실무 팁: 웹 검색 도구 선택
 >
 > | 도구 | 장점 | 단점 | 추천 사용처 |
 > |------|------|------|-------------|
-> | **DuckDuckGoSearchRun** | 무료, API 키 불필요 | 검색 품질 낮음, 느림 | 프로토타입 |
-> | **Google Search API** | 검색 품질 최고 | 유료 ($5/1K 쿼리) | 프로덕션 (예산 있음) |
-> | **Tavily API** | AI 검색 특화, 구조화된 결과 | 유료 ($0.01/검색) | RAG 시스템 |
-> | **SerpAPI** | 다양한 검색엔진 지원 | 유료 ($50/5K 쿼리) | 종합 검색 |
-> | **Bing Search API** | Microsoft 생태계 통합 | 유료 ($3/1K 쿼리) | Azure 사용자 |
+> | DuckDuckGoSearchRun | 무료, API 키 불필요 | 검색 품질 낮음, 느림 | 프로토타입 |
+> | Google Search API | 검색 품질 최고 | 유료 ($5/1K 쿼리) | 프로덕션 (예산 있음) |
+> | Tavily API | AI 검색 특화, 구조화된 결과 | 유료 ($0.01/검색) | RAG 시스템 |
+> | SerpAPI | 다양한 검색엔진 지원 | 유료 ($50/5K 쿼리) | 종합 검색 |
+> | Bing Search API | Microsoft 생태계 통합 | 유료 ($3/1K 쿼리) | Azure 사용자 |
 >
-> **개인 경험:**
+> 개인 경험:
 > - 초기 개발: DuckDuckGo (무료)
 > - MVP: Tavily (AI 특화, 결과 품질 좋음)
 > - 대규모: Google Search API (신뢰도 최고)
 >
-> **Tavily 사용 예시:**
+> Tavily 사용 예시:
 > ```python
 > from langchain_community.tools.tavily_search import TavilySearchResults
 >
@@ -1077,7 +1067,7 @@ retrieve → evaluate_grounding
 
 ### 7.1 프로젝트 개요
 
-다음 기능을 모두 포함하는 **프로덕션급 RAG 시스템**:
+다음 기능을 모두 포함하는 프로덕션급 RAG 시스템:
 
 - Self-RAG: 문서 관련성 평가
 - Corrective RAG: 질문 재작성
@@ -1294,26 +1284,26 @@ if __name__ == "__main__":
 
 ### 7.3 실행 흐름 예시
 
-**Case 1: 이상적인 경우**
+Case 1: 이상적인 경우
 ```
 retrieve → evaluate_relevance (0.8) → evaluate_grounding (yes) → generate → END
 ```
 
-**Case 2: 재작성 필요**
+Case 2: 재작성 필요
 ```
 retrieve → evaluate_relevance (0.3) → rewrite → retrieve → evaluate_relevance (0.7)
         → evaluate_grounding (yes) → generate → END
 ```
 
-**Case 3: 웹 검색 필요**
+Case 3: 웹 검색 필요
 ```
 retrieve → evaluate_relevance (0.7) → evaluate_grounding (no) → rewrite
         → retrieve → evaluate_relevance (0.4) → web_search → generate → END
 ```
 
-> **프로덕션 배포 체크리스트**
+> 프로덕션 배포 체크리스트
 >
-> **1. 에러 처리**
+> 1. 에러 처리
 > ```python
 > def safe_node(func):
 >     def wrapper(state):
@@ -1329,7 +1319,7 @@ retrieve → evaluate_relevance (0.7) → evaluate_grounding (no) → rewrite
 >     ...
 > ```
 >
-> **2. 타임아웃 설정**
+> 2. 타임아웃 설정
 > ```python
 > from timeout_decorator import timeout
 >
@@ -1338,7 +1328,7 @@ retrieve → evaluate_relevance (0.7) → evaluate_grounding (no) → rewrite
 >     ...
 > ```
 >
-> **3. 로깅 및 모니터링**
+> 3. 로깅 및 모니터링
 > ```python
 > import logging
 >
@@ -1350,7 +1340,7 @@ retrieve → evaluate_relevance (0.7) → evaluate_grounding (no) → rewrite
 >     logging.info(f"Found {len(docs)} documents")
 > ```
 >
-> **4. 비용 추적**
+> 4. 비용 추적
 > ```python
 > from langchain.callbacks import get_openai_callback
 >
@@ -1360,7 +1350,7 @@ retrieve → evaluate_relevance (0.7) → evaluate_grounding (no) → rewrite
 >     print(f"토큰: {cb.total_tokens}")
 > ```
 >
-> **5. A/B 테스팅**
+> 5. A/B 테스팅
 > - 기존 RAG vs LangGraph 성능 비교
 > - 정확도, 응답 시간, 비용 측정
 > - 사용자 만족도 조사
@@ -1468,7 +1458,7 @@ for step in app.stream({"question": "LangGraph란?"}):
 
 ### 8.4 성능 최적화
 
-**1. 병렬 처리:**
+1. 병렬 처리:
 ```python
 # 여러 노드를 동시에 실행
 graph.add_node("retrieve_pdf", retrieve_pdf_node)
@@ -1484,7 +1474,7 @@ graph.add_edge("retrieve_pdf", "merge")
 graph.add_edge("retrieve_web", "merge")
 ```
 
-**2. 캐싱:**
+2. 캐싱:
 ```python
 from functools import lru_cache
 
@@ -1500,14 +1490,14 @@ def retrieve_cached(question: str):
 
 ### 9.1 일반적인 문제
 
-**문제 1: 무한 루프**
+문제 1: 무한 루프
 ```
 증상: 프로그램이 멈추지 않음
 원인: retry_count 체크 누락
 해결: 최대 재시도 횟수 설정
 ```
 
-**문제 2: State 키 오류**
+문제 2: State 키 오류
 ```python
 # 에러: KeyError: 'rewritten_question'
 # 원인: 노드에서 생성하지 않은 키 참조
@@ -1519,7 +1509,7 @@ def safe_get(state, key, default=None):
 question = safe_get(state, "rewritten_question", state["question"])
 ```
 
-**문제 3: LLM 호출 실패**
+문제 3: LLM 호출 실패
 ```python
 # Rate limit, timeout 등
 def llm_call_with_retry(prompt, max_retries=3):
@@ -1529,7 +1519,7 @@ def llm_call_with_retry(prompt, max_retries=3):
         except Exception as e:
             if i == max_retries - 1:
                 raise
-            time.sleep(2 ** i)  # Exponential backoff
+            time.sleep(2  i)  # Exponential backoff
 ```
 
 ### 9.2 로그 분석
@@ -1560,19 +1550,19 @@ def retrieve_node(state):
 
 LangGraph는 복잡한 AI 워크플로우를 그래프로 모델링하여, 유연하고 제어 가능한 시스템을 구축할 수 있게 한다.
 
-**핵심 개념:**
-- **State**: 노드 간 공유 메모리
-- **Node**: 작업 수행 함수
-- **Edge**: 노드 연결
-- **Conditional Edge**: 조건부 분기
+핵심 개념:
+- State: 노드 간 공유 메모리
+- Node: 작업 수행 함수
+- Edge: 노드 연결
+- Conditional Edge: 조건부 분기
 
-**고급 패턴:**
-- **Self-RAG**: 문서 관련성 평가
-- **Corrective RAG**: 질문 재작성
-- **Web Search RAG**: 웹 검색 통합
-- **Human-in-the-Loop**: 사람 개입
+고급 패턴:
+- Self-RAG: 문서 관련성 평가
+- Corrective RAG: 질문 재작성
+- Web Search RAG: 웹 검색 통합
+- Human-in-the-Loop: 사람 개입
 
-**실무 권장사항:**
+실무 권장사항:
 1. 무한 루프 방지 (retry_count, recursion_limit)
 2. 에러 처리 및 로깅
 3. 비용 추적 및 최적화
@@ -1580,5 +1570,5 @@ LangGraph는 복잡한 AI 워크플로우를 그래프로 모델링하여, 유�
 
 LangGraph는 프로덕션급 RAG 시스템 구축에 필수 도구다. 기본 RAG로 시작하여, 점진적으로 Self-RAG, Corrective RAG를 추가하며 개선하자.
 
-**참고**
+참고
 LangGraph는 LangChain 생태계의 최신 도구로, 빠르게 업데이트된다. 공식 문서(https://langchain-ai.github.io/langgraph/)를 주기적으로 확인하자.

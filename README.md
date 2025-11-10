@@ -10,7 +10,7 @@ AI Agent 개발에 필요한 개념들을 공부하며 정리한 노트입니다
 4. [머신러닝 (Machine Learning)](./04-machine-learning.md)
 5. [LangChain](./05-langchain.md)
 6. [Streamlit](./06-streamlit.md)
-7. [LangGraph](./07-langraph.md)
+7. [LangGraph](./07-langGraph.md)
 
 ---
 
