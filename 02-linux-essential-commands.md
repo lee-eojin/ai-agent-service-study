@@ -21,7 +21,7 @@ lsb_release -a
 sw_vers
 ```
 
-**출력 예시:**
+출력 예시:
 ```
 Linux ai-dev-server 5.15.0-1023-oracle #29-Ubuntu SMP x86_64 GNU/Linux
 ```
@@ -44,7 +44,7 @@ sudo shutdown -c
 
 ### 1.3 서비스 관리
 
-**systemctl (Linux):**
+systemctl (Linux):
 ```bash
 # 서비스 시작
 sudo systemctl start nginx
@@ -65,7 +65,7 @@ sudo systemctl status nginx
 systemctl list-units --type=service
 ```
 
-**launchctl (macOS):**
+launchctl (macOS):
 ```bash
 # 서비스 시작
 launchctl start com.example.service
@@ -94,7 +94,7 @@ du -sh /var/log
 du -h /home/ubuntu | sort -rh | head -n 10
 ```
 
-**출력 예시:**
+출력 예시:
 ```
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/sda1        40G   12G   26G  32% /
@@ -272,7 +272,7 @@ chmod u+w,g-w,o-w file.txt   # 소유자만 쓰기 가능
 chmod -R 755 /var/www        # 디렉토리 재귀 적용
 ```
 
-**권한 번호 이해:**
+권한 번호 이해:
 - 4 = 읽기 (r)
 - 2 = 쓰기 (w)
 - 1 = 실행 (x)
@@ -571,7 +571,7 @@ tar -czf $BACKUP_DIR/backup_$DATE.tar.gz $SOURCE_DIR
 echo "백업 완료: backup_$DATE.tar.gz"
 ```
 
-**실행 권한 부여:**
+실행 권한 부여:
 ```bash
 chmod +x backup.sh
 ./backup.sh
@@ -593,7 +593,7 @@ else
 fi
 ```
 
-**비교 연산자:**
+비교 연산자:
 - `-f`: 파일 존재
 - `-d`: 디렉토리 존재
 - `-z`: 문자열이 비어있음
@@ -625,7 +625,7 @@ done
 
 ### 10.4 환경 설정
 
-**~/.bashrc (또는 ~/.zshrc):**
+~/.bashrc (또는 ~/.zshrc):
 ```bash
 # 환경 변수 설정
 export PATH="$HOME/bin:$PATH"
@@ -645,7 +645,7 @@ function mkcd() {
 PS1='\u@\h:\w\$ '
 ```
 
-**적용:**
+적용:
 ```bash
 source ~/.bashrc
 ```

@@ -14,4 +14,4 @@ AI Agent 개발에 필요한 개념들을 공부하며 정리한 노트입니다
 
 ---
 
-**Study Period**: 2025.09 - 2025.11 (Completed)
+Study Period: 2025.09 - 2025.11 (Completed)

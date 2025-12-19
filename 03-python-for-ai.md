@@ -2,9 +2,9 @@
 
 ## 학습 목표
 
-1. **Python 개발 환경 구축**: 가상환경 설정, VSCode 연동, 패키지 관리
-2. **Python 핵심 문법**: 자료구조, 제어문, 함수, 객체지향, 예외 처리
-3. **AI 응용 실습**: Flask 웹 서버, PostgreSQL 연동, LLM API 호출, 벡터 임베딩
+1. Python 개발 환경 구축: 가상환경 설정, VSCode 연동, 패키지 관리
+2. Python 핵심 문법: 자료구조, 제어문, 함수, 객체지향, 예외 처리
+3. AI 응용 실습: Flask 웹 서버, PostgreSQL 연동, LLM API 호출, 벡터 임베딩
 
 ---
 
@@ -16,7 +16,7 @@ AI 개발의 첫 단계는 독립적인 Python 실행 환경 구축이다. 프�
 
 #### 1.1 가상환경 생성 (venv)
 
-**macOS/Linux:**
+macOS/Linux:
 ```bash
 # 가상환경 생성
 python3 -m venv myvenv
@@ -31,24 +31,24 @@ pip install transformers flask openai
 deactivate
 ```
 
-**Windows:**
+Windows:
 ```bash
 python -m venv myvenv
 myvenv\Scripts\activate
 ```
 
-> **가상환경을 사용하는 이유**
+> 가상환경을 사용하는 이유
 >
-> **프로젝트 간 충돌 방지:**
+> 프로젝트 간 충돌 방지:
 > - 프로젝트 A: Django 3.2 사용
 > - 프로젝트 B: Django 4.0 사용
 > - 시스템 Python에 둘 다 설치하면 충돌 발생
 >
-> **재현 가능한 환경:**
+> 재현 가능한 환경:
 > - `requirements.txt`로 정확한 패키지 버전 기록
 > - 다른 팀원이나 서버에서 동일 환경 재현 가능
 >
-> **시스템 Python 보호:**
+> 시스템 Python 보호:
 > - macOS는 시스템 Python을 OS가 사용 (특히 `/usr/bin/python3`)
 > - 실수로 시스템 패키지를 삭제하면 OS 문제 발생 가능
 > - 가상환경으로 완전히 격리된 공간에서 작업
@@ -81,7 +81,7 @@ conda deactivate
 
 #### 1.3 VSCode 연동
 
-**1. VSCode 설치 (macOS):**
+1. VSCode 설치 (macOS):
 ```bash
 # Homebrew로 설치
 brew install --cask visual-studio-code
@@ -89,14 +89,14 @@ brew install --cask visual-studio-code
 # 또는 https://code.visualstudio.com/download 에서 다운로드
 ```
 
-**2. Python 확장 설치:**
+2. Python 확장 설치:
 - VSCode 실행 → Extensions (⌘+Shift+X) → "Python" 검색 및 설치
 
-**3. 인터프리터 선택:**
+3. 인터프리터 선택:
 - `⌘+Shift+P` → "Python: Select Interpreter"
 - `./myvenv/bin/python` 선택
 
-**4. 테스트 코드 작성:**
+4. 테스트 코드 작성:
 ```python
 # test.py
 import sys
@@ -104,7 +104,7 @@ print(f"Python 버전: {sys.version}")
 print(f"실행 경로: {sys.executable}")
 ```
 
-**5. 터미널에서 실행:**
+5. 터미널에서 실행:
 ```bash
 python test.py
 ```
@@ -130,14 +130,14 @@ str_age = str(age)    # "25"
 int_height = int(height)  # 175
 ```
 
-**파이썬 특징:**
-- **동적 타이핑**: 변수 선언 시 타입 지정 불필요
-- **임의 정밀도**: int는 메모리가 허용하는 한 무한대로 커질 수 있음
-- **유니코드 지원**: 문자열에서 한글, 이모지 등 자유롭게 사용
+파이썬 특징:
+- 동적 타이핑: 변수 선언 시 타입 지정 불필요
+- 임의 정밀도: int는 메모리가 허용하는 한 무한대로 커질 수 있음
+- 유니코드 지원: 문자열에서 한글, 이모지 등 자유롭게 사용
 
 #### 2.2 연산자
 
-**산술 연산:**
+산술 연산:
 ```python
 10 / 2    # 5.0 (결과가 항상 float)
 10 // 2   # 5 (정수 나눗셈)
@@ -145,7 +145,7 @@ int_height = int(height)  # 175
 2 ** 3    # 8 (거듭제곱)
 ```
 
-**비교 및 멤버십:**
+비교 및 멤버십:
 ```python
 x = [1, 2, 3]
 1 in x        # True
@@ -157,7 +157,7 @@ a == b        # True (값 비교)
 a is b        # False (객체 비교)
 ```
 
-**비트 연산:**
+비트 연산:
 ```python
 # 8진수, 16진수, 2진수 표현
 0o20   # 16 (8진수)
@@ -234,16 +234,16 @@ match grade:
         print("노력 필요")
 ```
 
-> **들여쓰기의 중요성**
+> 들여쓰기의 중요성
 >
-> Python은 Java의 `{}`와 달리 **콜론(`:`)과 들여쓰기**로 코드 블록을 구분한다.
-> - 들여쓰기는 보통 **스페이스 4칸** 권장 (PEP 8 표준)
+> Python은 Java의 `{}`와 달리 콜론(`:`)과 들여쓰기로 코드 블록을 구분한다.
+> - 들여쓰기는 보통 스페이스 4칸 권장 (PEP 8 표준)
 > - VSCode는 자동으로 4칸 스페이스로 설정됨
 > - 탭과 스페이스를 혼용하면 `IndentationError` 발생
 
 #### 3.2 반복문
 
-**for 반복:**
+for 반복:
 ```python
 # 기본 반복
 for i in range(5):
@@ -262,7 +262,7 @@ else:
     print("break 없이 완료")
 ```
 
-**리스트 컴프리헨션:**
+리스트 컴프리헨션:
 ```python
 # 일반 방식
 squares = []
@@ -350,9 +350,9 @@ for key, value in student.items():
     print(f"{key}: {value}")
 ```
 
-> **💡 깊은 복사 vs 얕은 복사**
+> 깊은 복사 vs 얕은 복사
 >
-> **얕은 복사 (Shallow Copy):**
+> 얕은 복사 (Shallow Copy):
 > ```python
 > original = [[1, 2], [3, 4]]
 > copied = original.copy()
@@ -360,7 +360,7 @@ for key, value in student.items():
 > print(original)  # [[99, 2], [3, 4]] (원본도 변경됨!)
 > ```
 >
-> **깊은 복사 (Deep Copy):**
+> 깊은 복사 (Deep Copy):
 > ```python
 > import copy
 > original = [[1, 2], [3, 4]]
@@ -369,7 +369,7 @@ for key, value in student.items():
 > print(original)  # [[1, 2], [3, 4]] (원본 유지)
 > ```
 >
-> **언제 사용하는가?**
+> 언제 사용하는가?
 > - 단순 값(int, str) 리스트: 얕은 복사로 충분
 > - 중첩 구조(리스트 안의 리스트, 딕셔너리): 깊은 복사 필수
 > - 리스트, 딕셔너리 등은 메모리 참조를 공유하므로 주의
@@ -631,23 +631,23 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 ```
 
-**실행:**
+실행:
 ```bash
 python app.py
 ```
 
 브라우저에서 `http://localhost:5000` 접속
 
-> **macOS 방화벽 설정**
+> macOS 방화벽 설정
 >
 > macOS에서 Flask 서버 실행 시 방화벽 경고가 뜰 수 있습니다.
-> - **시스템 설정** → **네트워크** → **방화벽** → **방화벽 옵션**
+> - 시스템 설정 → 네트워크 → 방화벽 → 방화벽 옵션
 > - Python이나 터미널 앱에 대해 "들어오는 연결 허용" 선택
 > - 또는 `host="127.0.0.1"`로 변경하여 로컬에서만 접속 가능하게 설정
 
 #### 10.2 HTML 템플릿 사용
 
-**templates/index.html:**
+templates/index.html:
 ```html
 <!DOCTYPE html>
 <html>
@@ -665,7 +665,7 @@ python app.py
 </html>
 ```
 
-**app.py:**
+app.py:
 ```python
 from flask import Flask, render_template
 
@@ -885,7 +885,7 @@ if __name__ == "__main__":
     print(response.choices[0].message.content)
 ```
 
-**실행:**
+실행:
 ```bash
 python gemini_chat.py "서울시의 면적과 인구를 알려줘"
 ```
@@ -997,7 +997,7 @@ def find_most_similar(text: str):
             print(f"\n가장 유사한 문장: {matched_text}")
             print(f"거리 (낮을수록 유사): {similarity:.6f}")
         else:
-            print("❌ 유사한 문장을 찾을 수 없습니다.")
+            print("유사한 문장을 찾을 수 없습니다.")
     except Exception as e:
         print("DB 오류:", e)
     finally:
@@ -1009,15 +1009,15 @@ if __name__ == "__main__":
     find_most_similar(user_input)
 ```
 
-> **벡터 검색 연산자**
+> 벡터 검색 연산자
 >
 > | 연산자 | 거리 측정 방식 | 사용 사례 |
 > |--------|----------------|-----------|
 > | `<->` | L2 거리 (유클리드) | 일반적인 거리 계산 |
-> | `<=>` | 코사인 거리 | **텍스트 임베딩 검색** (가장 일반적) |
+> | `<=>` | 코사인 거리 | 텍스트 임베딩 검색 (가장 일반적) |
 > | `<#>` | 내적 | 추천 시스템 |
 >
-> **코사인 유사도를 주로 사용하는 이유:**
+> 코사인 유사도를 주로 사용하는 이유:
 > - 벡터의 방향(의미)만 비교, 크기는 무시
 > - 문서 길이에 영향을 받지 않음
 > - OpenAI/Gemini 임베딩 모델이 코사인 유사도 기준으로 최적화됨
