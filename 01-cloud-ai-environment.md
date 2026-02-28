@@ -304,7 +304,7 @@ venv를 사용하는 이유:
 - `requirements.txt`로 의존성 재현 가능
 
 ```bash
-# ~~Python 3.10 설치~~ (2026.03.01 수정) Python 3.12가 현재 주류. 3.12 기준으로 설치
+# (2026.03.01 수정) Python 3.10 설치 → Python 3.12가 현재 주류. 3.12 기준으로 설치
 sudo apt install -y python3.12 python3.12-venv python3-pip
 
 # 가상환경 생성
@@ -380,8 +380,8 @@ CREATE TABLE documents (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- ~~벡터 인덱스 생성 (유사도 검색 최적화)~~
--- ~~CREATE INDEX ON documents USING ivfflat (embedding vector_cosine_ops);~~
+-- (구버전) 벡터 인덱스 생성 (유사도 검색 최적화)
+-- (구버전) CREATE INDEX ON documents USING ivfflat (embedding vector_cosine_ops);
 -- (2026.03.01 수정) pgvector 0.7+ 이후 hnsw 인덱스가 프로덕션 표준으로 자리잡음.
 -- ivfflat은 데이터를 미리 넣고 나서 인덱스를 생성해야 효과적이지만,
 -- hnsw는 점진적 삽입에도 성능이 유지되어 대부분의 경우 hnsw가 권장됨.

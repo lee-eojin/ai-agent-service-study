@@ -517,13 +517,13 @@ model = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
 # Anthropic (Claude)
 from langchain_anthropic import ChatAnthropic
-# ~~model = ChatAnthropic(model="claude-3-5-sonnet-20241022")~~
+# (구버전) model = ChatAnthropic(model="claude-3-5-sonnet-20241022")
 # (2026.03.01 수정) Claude 4.x 출시. 현재 권장 모델: claude-sonnet-4-6, claude-opus-4-6
 model = ChatAnthropic(model="claude-sonnet-4-6")
 
 # Google (Gemini)
 from langchain_google_genai import ChatGoogleGenerativeAI
-# ~~model = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp")~~
+# (구버전) model = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp")
 # (2026.03.01 수정) gemini-2.0-flash-exp는 실험 버전이었음. 최신 모델명은 공식 문서 확인
 model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 ```
@@ -535,7 +535,7 @@ from langchain_community.chat_models import ChatOllama
 # from langchain_ollama import ChatOllama  ← 최신 권장 경로
 
 # Ollama 서버 실행 필요: ollama serve
-# ~~model = ChatOllama(model="llama3.1:8b")~~
+# (구버전) model = ChatOllama(model="llama3.1:8b")
 # (2026.03.01 수정) Meta Llama 버전 업데이트됨. `ollama list` 로 사용 가능한 최신 버전 확인
 model = ChatOllama(model="llama3.3:8b")
 ```
