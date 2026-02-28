@@ -27,5 +27,3 @@ Study Period: 2025.09 - 2025.11 (Completed)
 - Add LangChain ChatOllama import path migration warning
 - Note AgentExecutor deprecation in favor of langgraph.prebuilt
 - Add Transformer-replaced-RNN note in ML section
-- Remove all emoji and ** bold markup throughout all files
-- Add (2026.03.01 수정) annotations for deprecated content
