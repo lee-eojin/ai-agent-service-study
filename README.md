@@ -20,10 +20,10 @@ Study Period: 2025.09 - 2025.11 (Completed)
 
 ### Updates (2026.03.01)
 
-- Upgrade model references: 
-    Claude 3.5 Sonnet → claude-sonnet-4-6,
-    gemini-2.0-flash-exp → gemini-2.0-flash,
-    llama3.1 → llama3.3
+- Upgrade model references:
+  - Claude 3.5 Sonnet → claude-sonnet-4-6
+  - gemini-2.0-flash-exp → gemini-2.0-flash
+  - llama3.1 → llama3.3
 - Update Python 3.10 → 3.12 and pgVector index ivfflat → hnsw
 - Note Ubuntu 24.04 LTS viability replacing 22.04 recommendation
 - Add LangChain ChatOllama import path migration warning
