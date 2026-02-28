@@ -54,7 +54,9 @@ pip install langchain langchain-community langchain-openai
 
 > 실무 관점: LangChain을 배워야 하는 이유
 >
-> 2023년부터 AI 스타트업과 대기업 AI팀의 약 70%가 LangChain을 사용한다는 통계가 있다. 실제로 프로덕션 환경에서 검증된 프레임워크다.
+> ~~2023년부터 AI 스타트업과 대기업 AI팀의 약 70%가 LangChain을 사용한다는 통계가 있다.~~
+>
+> (2026.03.01 수정) 출처 불명확한 통계. LangChain은 여전히 넓게 쓰이지만 LlamaIndex, 자체 구현, LangGraph 등 대안도 많이 사용됨. 실제로 프로덕션 환경에서 검증된 프레임워크인 것은 사실이다.
 >
 > 장점:
 > - OpenAI, Anthropic, Google 등 주요 LLM 통합 지원
@@ -515,19 +517,27 @@ model = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
 # Anthropic (Claude)
 from langchain_anthropic import ChatAnthropic
-model = ChatAnthropic(model="claude-3-5-sonnet-20241022")
+# ~~model = ChatAnthropic(model="claude-3-5-sonnet-20241022")~~
+# (2026.03.01 수정) Claude 4.x 출시. 현재 권장 모델: claude-sonnet-4-6, claude-opus-4-6
+model = ChatAnthropic(model="claude-sonnet-4-6")
 
 # Google (Gemini)
 from langchain_google_genai import ChatGoogleGenerativeAI
-model = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp")
+# ~~model = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp")~~
+# (2026.03.01 수정) gemini-2.0-flash-exp는 실험 버전이었음. 최신 모델명은 공식 문서 확인
+model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 ```
 
 로컬 실행 (Ollama):
 ```python
 from langchain_community.chat_models import ChatOllama
+# (2026.03.01 수정) 최신 버전에서는 import 경로가 변경됨
+# from langchain_ollama import ChatOllama  ← 최신 권장 경로
 
 # Ollama 서버 실행 필요: ollama serve
-model = ChatOllama(model="llama3.1:8b")
+# ~~model = ChatOllama(model="llama3.1:8b")~~
+# (2026.03.01 수정) Meta Llama 버전 업데이트됨. `ollama list` 로 사용 가능한 최신 버전 확인
+model = ChatOllama(model="llama3.3:8b")
 ```
 
 > 실무 팁: 모델 선택 기준
@@ -535,15 +545,18 @@ model = ChatOllama(model="llama3.1:8b")
 > | 기준 | 추천 모델 | 이유 |
 > |------|-----------|------|
 > | 비용 최소화 | gpt-4o-mini, gemini-2.0-flash | 저렴하면서 준수한 성능 |
-> | 성능 최우선 | claude-3.5-sonnet, gpt-4o | 복잡한 추론, 긴 문맥 처리 |
-> | 데이터 보안 | Ollama (llama3.1) | 온프레미스, 외부 전송 없음 |
-> | 한국어 특화 | gpt-4o, claude-3-opus | 한국어 성능 우수 |
-> | 코드 생성 | claude-3.5-sonnet | 코딩 벤치마크 1위 |
+> | 성능 최우선 | claude-sonnet-4-6, gpt-4o | 복잡한 추론, 긴 문맥 처리 |
+> | 데이터 보안 | Ollama (llama3.3) | 온프레미스, 외부 전송 없음 |
+> | 한국어 특화 | gpt-4o, claude-sonnet-4-6 | 한국어 성능 우수 |
+> | 코드 생성 | claude-sonnet-4-6 | 코딩 벤치마크 우수 |
+>
+> (2026.03.01 수정) 모델 라인업은 빠르게 변경된다. 위 표는 참고용이며 실제 사용 시 각 공급사 공식 문서에서 최신 모델명을 확인할 것.
 >
 > 개인 경험:
 > - 프로토타입: gpt-4o-mini (빠르고 저렴)
 > - 프로덕션: gpt-4o + fallback gpt-4o-mini (성능 + 안정성)
-> - 내부 문서: Ollama llama3.1 (보안)
+> - ~~내부 문서: Ollama llama3.1 (보안)~~
+> - 내부 문서: Ollama llama3.3 (보안) ← (2026.03.01 수정)
 
 ### 4.3 Temperature 파라미터
 
@@ -678,8 +691,8 @@ print(result.age)   # 25
 >
 > | 기준 | Pydantic | JSON |
 > |------|----------|------|
-> | 타입 안전 | ✅ 강력한 타입 검증 | ❌ 런타임 에러 가능 |
-> | 코드 자동완성 | ✅ IDE 지원 | ❌ 딕셔너리 키 오타 위험 |
+> | 타입 안전 | O - 강력한 타입 검증 | X - 런타임 에러 가능 |
+> | 코드 자동완성 | O - IDE 지원 | X - 딕셔너리 키 오타 위험 |
 > | 러닝 커브 | 약간 있음 | 없음 |
 > | 추천 상황 | 프로덕션 코드 | 프로토타입, 간단한 스크립트 |
 >
@@ -1491,6 +1504,8 @@ ReAct 플로우차트:
 ```python
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_react_agent
+# (2026.03.01 수정) LangChain 0.3+ 이후 Agent API 변경이 있었음.
+# 현재는 LangGraph 기반 구현이 권장됨: from langgraph.prebuilt import create_react_agent
 from langchain_core.tools import Tool
 from langchain import hub
 

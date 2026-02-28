@@ -42,6 +42,8 @@ LangGraph는 LLM 기반 애플리케이션의 흐름을 그래프 구조로 모�
 pip install langgraph langchain langchain-openai
 ```
 
+(2026.03.01 수정) LangGraph는 LangChain 생태계와 함께 빠르게 업데이트된다. `pip install langgraph --upgrade` 후 import 경로가 달라질 수 있으므로 공식 문서 확인 필수. 특히 MemorySaver, StateGraph 관련 import 경로 주의.
+
 > 용어 정리: 그래프 (Graph)
 >
 > 컴퓨터 과학에서 그래프는 노드(Node)와 엣지(Edge)로 구성된 자료구조다:
@@ -77,7 +79,7 @@ Document Loader → Text Splitter → Embedding → VectorStore
 | 조건부 처리 부재 | if-else 로직 구현 어려움 | 상황별 대응 불가 |
 | 재시도 불가 | 실패 시 처음부터 다시 시작 | 비효율적 |
 
-> 💡 실무 관점: 기본 RAG의 한계
+> 실무 관점: 기본 RAG의 한계
 >
 > 프로덕션 환경에서 기본 RAG를 운영하면서 겪는 실제 문제들:
 >
@@ -187,7 +189,7 @@ class State(TypedDict):
 # 최종 State: documents = ["문서1", "문서2"]
 ```
 
-> ⚠️ 주의사항: State 크기 관리
+> 주의사항: State 크기 관리
 >
 > State는 매 노드마다 복사되므로 크기가 커지면 성능 저하:
 >
@@ -453,7 +455,7 @@ display(Image(app.get_graph().draw_mermaid_png()))
 question → answer → END
 ```
 
-> 💡 실무 팁: 디버깅 도구
+> 실무 팁: 디버깅 도구
 >
 > 1. 상세 로그 출력:
 > ```python
@@ -663,7 +665,7 @@ retrieve → evaluate → answer → END
            (관련성 평가)
 ```
 
-> 💡 실무 관점: 관련성 평가 최적화
+> 실무 관점: 관련성 평가 최적화
 >
 > LLM으로 각 문서를 평가하면 비용과 시간이 많이 든다:
 >
@@ -844,7 +846,7 @@ retrieve → evaluate → (관련성 높음) → generate → END
               (질문 재작성 후 재검색)
 ```
 
-> ⚠️ 주의사항: 무한 루프 방지
+> 주의사항: 무한 루프 방지
 >
 > Corrective RAG는 순환 구조라 무한 루프 위험이 있다:
 >
@@ -1032,7 +1034,7 @@ retrieve → evaluate_grounding
               └─ (not grounded) → rewrite → web_search → generate_from_web → END
 ```
 
-> 💡 실무 팁: 웹 검색 도구 선택
+> 실무 팁: 웹 검색 도구 선택
 >
 > | 도구 | 장점 | 단점 | 추천 사용처 |
 > |------|------|------|-------------|
@@ -1079,7 +1081,7 @@ retrieve → evaluate_grounding
 ```python
 from typing import TypedDict, Annotated
 from langgraph.graph import StateGraph, END
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import MemorySaver  # (2026.03.01 수정) import 경로 변경 가능. 최신 문서 확인
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
@@ -1572,3 +1574,5 @@ LangGraph는 프로덕션급 RAG 시스템 구축에 필수 도구다. 기본 RA
 
 참고
 LangGraph는 LangChain 생태계의 최신 도구로, 빠르게 업데이트된다. 공식 문서(https://langchain-ai.github.io/langgraph/)를 주기적으로 확인하자.
+
+(2026.03.01 수정) 2025~2026년 사이 LangGraph API에 큰 변화가 있었다. 특히 StateGraph 생성 방식, Checkpointer 관련 API, 그리고 `langgraph.prebuilt` 모듈의 활용이 권장되고 있다. 이 문서의 코드는 개념 학습용으로 참고하고, 실제 구현 시 최신 공식 문서를 기준으로 할 것.

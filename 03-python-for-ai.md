@@ -858,7 +858,10 @@ import sys
 
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/openai"
 GEMINI_API_KEY = "YOUR_API_KEY_HERE"
-LLM_ID = "gemini-2.0-flash-lite"
+# ~~LLM_ID = "gemini-2.0-flash-lite"~~
+# (2026.03.01 수정) Gemini 모델명은 빠르게 업데이트됨. 아래 URL에서 최신 모델명 확인:
+# https://ai.google.dev/gemini-api/docs/models/gemini
+LLM_ID = "gemini-2.0-flash"
 
 client = OpenAI(
     base_url=GEMINI_API_URL,

@@ -769,10 +769,19 @@ model = CharLSTM(input_size=4, hidden_size=8, output_size=4)
 > | LSTM | 장기 의존성 학습 가능 | 파라미터 많음, 느림 | 긴 시퀀스, 복잡한 패턴 |
 > | GRU | LSTM보다 빠름, 성능 유사 | LSTM보다 약간 낮은 표현력 | 일반적인 시퀀스 처리 |
 >
-> 실무 팁:
-> - 먼저 LSTM으로 시작
-> - 속도가 중요하면 GRU 고려
-> - 최근에는 Transformer가 RNN 계열을 대체하는 추세 (병렬 처리 가능)
+> ~~실무 팁:~~
+> ~~- 먼저 LSTM으로 시작~~
+> ~~- 속도가 중요하면 GRU 고려~~
+> ~~- 최근에는 Transformer가 RNN 계열을 대체하는 추세 (병렬 처리 가능)~~
+>
+> (2026.03.01 수정) RNN/LSTM/GRU는 이미 실무에서 거의 쓰이지 않는다. 위 내용은 개념 이해용으로만 참고.
+>
+> 2026년 기준 시퀀스 처리 실무:
+> - 자연어: BERT, GPT 계열 Transformer 모델 (Hugging Face로 fine-tuning)
+> - 시계열 예측: Transformer 기반 모델 (Temporal Fusion Transformer 등) 또는 전통 통계 모델 (ARIMA, Prophet)과 혼합
+> - 음성 인식: Whisper (OpenAI), Conformer 등 Transformer 계열
+>
+> RNN 계열을 신규 프로젝트에 선택하는 경우는 거의 없다. 개념 이해 후 Transformer로 넘어가자.
 
 ---
 
